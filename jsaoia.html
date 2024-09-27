@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSSフィード記事一覧</title>
+    <style>
+        :root {
+            --bg-color: #001f3f;
+            --text-color: #d1dce5;
+            --highlight-color: #64ffda;
+            --secondary-color: #0a2940;
+            --accent-color: #ff7373;
+            --button-color: #64ffda;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 2rem;
+            color: #ccd6f6;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+        .article-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        .article-row.fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .article-row:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        .article-img {
+            flex-shrink: 0;
+            width: 250px;
+            height: 140px;
+            object-fit: contain;
+            margin-right: 20px;
+        }
+        .article-content {
+            flex-grow: 1;
+        }
+        .article-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--highlight-color);
+        }
+        .article-description {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+
+        /* Skillsセクションとarticle-tagsを統合 */
+        .skills-container, .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .skill, .article-tags a {
+            background-color: var(--secondary-color);
+            color: var(--highlight-color);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            opacity: 1; /* 表示を確実にするために1に設定 */
+            transform: translateY(0); /* 初期位置はそのまま */
+            text-decoration: none;
+            border: 1px solid var(--highlight-color);
+        }
+
+        .skill.fade-in, .article-tags a.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .skill:hover, .article-tags a:hover {
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            transform: translateY(-5px);
+        }
+
+        .article-title a {
+            text-decoration: none;
+            color: var(--highlight-color);
+        }
+        .article-title a:hover {
+            color: var(--accent-color);
+        }
+
+        .load-more {
+            display: none;
+        }
+        .load-more-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: var(--button-color);
+            color: #001f3f;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .load-more-btn:hover {
+            background-color: #52e5c2;
+        }
+        .fold-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #4a6379;
+            color: var(--bg-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .fold-btn:hover {
+            background-color: var(--accent-color);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="section-title">RSSフィード記事一覧</h2>
+        <?php
+        // RSSフィードURL
+        $rss_feed_url = 'http://www.gizmodo.jp/index.xml';
+
+        // RSSフィードを取得
+        $rss = @simplexml_load_file($rss_feed_url);
+
+        if ($rss === false) {
+            echo "<p>RSSフィードを取得できませんでした。URLを確認してください。</p>";
+        } else {
+            $counter = 0;  // 表示カウンター
+            echo "<div class='articles-grid'>";
+
+            // 各記事の情報を表示
+            foreach ($rss->channel->item as $item) {
+                $counter++;
+
+                // 最初の5つの記事のみを表示。以降は「load-more」に表示。
+                $article_class = $counter > 5 ? 'article-row load-more' : 'article-row fade-in';
+
+                // 記事タイトル
+                $title = $item->title;
+
+                // リンク
+                $link = $item->link;
+
+                // サムネイル画像（RSSのenclosure要素から取得）
+                $thumbnail = '';
+                if ($item->enclosure && isset($item->enclosure['url'])) {
+                    $thumbnail = $item->enclosure['url'];
+                }
+
+                // 最初の本文（descriptionの最初の100文字）
+                $description = mb_substr(strip_tags($item->description), 0, 100) . '...';
+
+                // タグを取得
+                $tags = '';
+                if (isset($item->category)) {
+                    foreach ($item->category as $category) {
+                        $tags .= '<a href="#">' . htmlspecialchars($category, ENT_QUOTES, 'UTF-8') . '</a>';
+                    }
+                }
+
+                // 記事のHTMLを出力
+                echo "<div class='$article_class'>";
+                if (!empty($thumbnail)) {
+                    echo "<img src='" . htmlspecialchars($thumbnail, ENT_QUOTES, 'UTF-8') . "' alt='" . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . "' class='article-img'>";
+                }
+                echo "<div class='article-content'>";
+                echo "<h3 class='article-title'><a href='" . htmlspecialchars($link, ENT_QUOTES, 'UTF-8') . "' target='_blank'>" . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . "</a></h3>";
+                echo "<p class='article-description'>" . htmlspecialchars($description, ENT_QUOTES, 'UTF-8') . "</p>";
+                echo "<p class='article-tags'>" . $tags . "</p>";
+                echo "</div>";
+                echo "</div>";
+            }
+
+            echo "</div>";
+        }
+        ?>
+
+        <!-- 「さらに表示」ボタン -->
+        <button class="load-more-btn" id="loadMoreBtn">さらに表示</button>
+        <!-- 「折りたたむ」ボタン -->
+        <button class="fold-btn" id="foldBtn" style="display:none;">折りたたむ</button>
+    </div>
+
+    <script>
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const foldBtn = document.getElementById('foldBtn');
+    const loadMoreItems = document.querySelectorAll('.load-more');
+
+    // 「さらに表示」ボタンのクリックイベント
+    loadMoreBtn.addEventListener('click', function () {
+        loadMoreItems.forEach(item => {
+            item.style.display = 'flex';  // 最初に表示させる
+            item.style.overflow = 'hidden';  // 内容のクリッピング
+            const height = item.scrollHeight + 'px';  // 正しい高さを計算
+            item.style.height = '0';  // 初期状態は高さ0
+            item.style.opacity = '0';  // 初期状態は透明
+            requestAnimationFrame(() => {
+                item.style.transition = 'height 0.5s ease, opacity 0.5s ease';  // 高さと透明度にアニメーションを適用
+                item.style.height = height;  // 計算した高さにする
+                item.style.opacity = '1';  // 不透明にする
+            });
+        });
+        loadMoreBtn.style.display = 'none';  // 「さらに表示」ボタンを非表示
+        foldBtn.style.display = 'block';  // 「折りたたむ」ボタンを表示
+    });
+
+    // 「折りたたむ」ボタンのクリックイベント
+    foldBtn.addEventListener('click', function () {
+        loadMoreItems.forEach(item => {
+            item.style.transition = 'height 0.5s ease, opacity 0.5s ease';  // 高さと透明度にアニメーションを適用
+            item.style.height = '0';  // 高さを0にして折りたたむ
+            item.style.opacity = '0';  // 透明にする
+            item.style.overflow = 'hidden';  // 高さが変更される間は内容をクリップする
+            setTimeout(() => {
+                item.style.display = 'none';  // 高さが0になった後に非表示に
+                item.style.height = 'auto';  // 高さをautoに戻して再表示に備える
+                item.style.overflow = '';  // overflowの設定を元に戻す
+            }, 500);  // アニメーションの時間に合わせて500ms
+        });
+        foldBtn.style.display = 'none';  // 「折りたたむ」ボタンを非表示
+        loadMoreBtn.style.display = 'block';  // 「さらに表示」ボタンを再表示
+
+        // スクロール位置を戻す
+        window.scrollTo({
+            top: loadMoreBtn.offsetTop - 20,  // 「さらに表示」ボタンの位置まで戻す
+            behavior: 'smooth'  // スムーズスクロール
+        });
+    });
+</script>
+</body>
+</html>

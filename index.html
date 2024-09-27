@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鈴木我信 | ハンディキャップをインスピレーションに</title>
+		<!-- ファビコン設定 -->
+    <link rel="icon" href="profile-image.webp" type="image/x-icon">
+    <!-- OGP設定 -->
+    <meta property="og:title" content="鈴木我信 | ハンディキャップをインスピレーションに">
+    <meta property="og:description" content="視覚障害を持つ18歳の高校3年生、鈴木我信のウェブサイト。プログラミングや3DCGに興味があり、現在「GC Studio」を中心に活動しています。">
+    <meta property="og:image" content="profile-image.webp">
+    <meta property="og:url" content="https://suzuki-gashin.prot-news.com">
+    <meta property="og:type" content="website">
+    <style>
+        :root {
+            --bg-color: #001f3f;
+            --text-color: #d1dce5;
+            --highlight-color: #64ffda;
+            --secondary-color: #0a2940;
+            --accent-color: #ff7373;
+            --overlay-color: rgba(10, 41, 64, 0.8);
+            --project-bg: rgba(10, 41, 64, 0.7);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--overlay-color);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        header.scrolled {
+            padding: 10px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        nav ul {
+            display: flex;
+            justify-content: flex-end;
+            list-style-type: none;
+        }
+        nav ul li {
+            margin-left: 30px;
+        }
+        nav ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--highlight-color);
+            transition: width 0.3s ease;
+        }
+        nav ul li a:hover::after,
+        nav ul li a.active::after {
+            width: 100%;
+        }
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-content {
+            z-index: 1;
+        }
+        .hero-content img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 4px solid var(--highlight-color);
+        }
+        .hero-content h1 {
+            font-size: 4rem;
+            color: #fff;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease;
+        }
+        .hero-content p {
+            font-size: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+        .section {
+            padding: 100px 0;
+            position: relative;
+            z-index: 1;
+            background-color: rgba(0, 0, 0, 0.5); /* コンテンツ全体を半透明に */
+        }
+        .section-title {
+            font-size: 2.5rem;
+            color: #ccd6f6;
+            margin-bottom: 50px;
+            text-align: center;
+            position: relative;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 4px;
+            background-color: var(--highlight-color);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .profile-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .profile-content {
+            flex: 1;
+            min-width: 300px;
+            padding: 0 30px;
+        }
+        .profile-social-links {
+            display: flex;
+            justify-content: start;
+            margin-top: 20px;
+        }
+        .profile-social-links a {
+            color: var(--text-color);
+            font-size: 24px;
+            margin-right: 20px;
+            transition: color 0.3s ease;
+        }
+        .profile-social-links a:hover {
+            color: var(--highlight-color);
+        }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .project-card {
+            background-color: var(--project-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .project-card.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .project-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            opacity: 0.85; /* 透明度を上げる */
+        }
+        .project-card:hover img {
+            transform: scale(1.1);
+        }
+        .project-content {
+            padding: 20px;
+        }
+        .project-content h3 {
+            color: #ccd6f6;
+            margin-bottom: 10px;
+        }
+        .project-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(17, 34, 64, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .project-card:hover .project-overlay {
+            opacity: 1;
+        }
+        .project-overlay-content {
+            text-align: center;
+            color: #fff;
+            padding: 20px;
+        }
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .skill {
+            background-color: var(--secondary-color);
+            color: var(--highlight-color);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .skill.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .skill:hover {
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            transform: translateY(-5px);
+        }
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            background-color: var(--highlight-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1px;
+        }
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.5s ease;
+        }
+        .timeline-item.fade-in {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: var(--highlight-color);
+            border: 4px solid var(--bg-color);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .left {
+            left: 0;
+        }
+        .right {
+            left: 50%;
+        }
+        .right::after {
+            left: -10px;
+        }
+        .timeline-content {
+            padding: 20px 30px;
+            background-color: var(--secondary-color);
+            position: relative;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .timeline-content:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .project-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 15px;
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            text-decoration: none;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .project-link:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        .social-links {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .social-links a {
+            color: var(--text-color);
+            font-size: 24px;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+        }
+        .social-links a:hover {
+            color: var(--highlight-color);
+        }
+        footer {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            text-align: center;
+            padding: 30px 0;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media screen and (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+            .hero-content p {
+                font-size: 1.2rem;
+            }
+            .profile-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            .profile-image {
+                margin-bottom: 30px;
+            }
+            .profile-social-links {
+                justify-content: center;
+            }
+            .timeline::after {
+                left: 31px;
+            }
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            .timeline-item::after {
+                left: 21px;
+            }
+            .left::after, .right::after {
+                left: 21px;
+            }
+            .right {
+                left: 0%;
+            }
+        }
+        #background-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .loader div {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            background: var(--highlight-color);
+            border-radius: 50%;
+            animation: loader 1.2s linear infinite;
+        }
+        @keyframes loader {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.5);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        .loader div:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .loader div:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        .loader div:nth-child(4) {
+            animation-delay: 0.6s;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <header>
+        <div class="container">
+            <nav>
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#timeline">Timeline</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <img src="profile-image.webp" alt="鈴木我信のプロフィーんル画像">
+                <h1>鈴木我信</h1>
+                <p>ハンディキャップをインスピレーションに</p>
+            </div>
+        </section>
+
+        <section id="about" class="section">
+            <div class="container">
+                <h2 class="section-title">About Me</h2>
+                <div class="profile-container">
+                    <div class="profile-content">
+											<p>こんにちは。鈴木我信です。<br>
+視覚障害を持つ18歳の高校3年生です。
+プログラミングや3DCGに興味があります。<br>
+現在、「GC Studio」を中心に、アプリ開発、メディア運営、教育コンテンツ制作を行っています。</p>
+
+                        <div class="profile-social-links">
+                            <a href="https://x.com/gashin0601?s=21&t=_CYPhP26DF8le42znsYlwQ" target="_blank" rel="noopener noreferrer" aria-label="X (旧Twitter)">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://www.instagram.com/gashinsuzuki?igsh=bm84cDR0MDJyMzRs&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://github.com/Gashin0601" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section">
+            <div class="container">
+                <h2 class="section-title">Projects</h2>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <img src="gcstudio-screenshot.jpg" alt="GCStudioのスクリーンショット">
+                        <div class="project-content">
+                            <h3>GCStudio</h3>
+                            <p>アプリ開発等の事業展開</p>
+                            <a href="https://gashincreations.com" class="project-link" target="_blank" rel="noopener noreferrer">詳細を見る</a>
+                        </div>
+                        <div class="project-overlay">
+                            <div class="project-overlay-content">
+                                <h3>GCStudio</h3>
+                                <p>視覚障害者のための支援アプリや教育コンテンツを開発するスタジオ。革新的なアプローチで、アクセシビリティの向上に貢献しています。</p>
+                                <a href="https://gashincreations.com" class="project-link" target="_blank" rel="noopener noreferrer">サイトへ行く</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <img src="visionsim-screenshot.webp" alt="VisionSimのスクリーンショット">
+                        <div class="project-content">
+                            <h3>VisionSim</h3>
+                            <p>視覚障害シミュレーションアプリ</p>
+                            <a href="https://visionsim.prot-news.com" class="project-link" target="_blank" rel="noopener noreferrer">詳細を見る</a>
+                        </div>
+                        <div class="project-overlay">
+                            <div class="project-overlay-content">
+                                <h3>VisionSim</h3>
+                                <p>様々な視覚障害をシミュレーートし、理解と支援を促進するアプリケーション。ユーザーが異なる視覚条件を体験できます。</p>
+                                <a href="https://visionsim.prot-news.com" class="project-link" target="_blank" rel="noopener noreferrer">サイトへ</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <img src="space-education-3dcg.jpg" alt="宇宙教育コンテンツの3DCG画像">
+                        <div class="project-content">
+                            <h3>宇宙教育コンテンツ</h3>
+                            <p>3DCGを活用した教育コンテンツ制作</p>
+                            <a href="https://gashincreations.com/space-visualization-cg-technology" class="project-link" target="_blank" rel="noopener noreferrer">詳細を見る</a>
+                        </div>
+                        <div class="project-overlay">
+                            <div class="project-overlay-content">
+                                <h3>宇宙教育コンテンツ</h3>
+                                <p>3DCGを活用した宇宙教育コンテンツ制作事業。最先端の宇宙シュミレータを活用し、子供たちに宇宙の魅力と科学の面白さを伝えています。</p>
+                                <a href="https://gashincreations.com/space-visualization-cg-technology" class="project-link" target="_blank" rel="noopener noreferrer">サイトへ</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <img src="protnews-screenshot.jpg" alt="Prot-Newsのスクリーンショット">
+                        <div class="project-content">
+                            <h3>Prot-News</h3>
+                            <p>「ハンディキャップ×テクノロジー」をテーマに発信中</p>
+                            <a href="https://prot-news.com" class="project-link" target="_blank" rel="noopener noreferrer">詳細を見る</a>
+                        </div>
+                        <div class="project-overlay">
+                            <div class="project-overlay-content">
+                                <h3>Prot-News</h3>
+                                <p>2024年7月に開設した新メディア。テクノロジーと教育の最前線を追い、読者に価値ある情報を提供しています。</p>
+                                <a href="https://prot-news.com" class="project-link" target="_blank" rel="noopener noreferrer">サイトへ</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="section">
+            <div class="container">
+                <h2 class="section-title">Skills</h2>
+                <div class="skills-container">
+                    <span class="skill">Swift</span>
+                    <span class="skill">Python</span>
+                    <span class="skill">PHP</span>
+                    <span class="skill">HTML</span>
+                    <span class="skill">CSS</span>
+                    <span class="skill">JavaScript</span>
+                    <span class="skill">3Dモデリング</span>
+                    <span class="skill">アニメーション</span>
+                    <span class="skill">アプリ開発</span>
+                    <span class="skill">メディア運営</span>
+                    <span class="skill">UI/UXデザイン</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="timeline" class="section">
+            <div class="container">
+                <h2 class="section-title">My Journey</h2>
+                <div class="timeline">
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <h3>2023年8月</h3>
+                            <p>福祉団体での講演活動開始</p>
+                            <p>視覚障害者支援の重要性を社会に伝える活動を開始。技術と福祉の融合の可能性を探る。</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <h3>2023年12月</h3>
+                            <p>Swift学習とアプリ開発開始</p>
+                            <p>iOSアプリ開発の世界に飛び込む。VisionSimプロジェクトの構想が生まれる。</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <h3>2024年2月</h3>
+                            <p>宇宙教育コンテンツ制作事業立ち上げ</p>
+                            <p>3DCG技術を活用し、子供たちに宇宙の魅力を伝える新プロジェクトを始動。</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <h3>2024年7月</h3>
+                            <p>Prot-News開設</p>
+                            <p>技術と教育の最新動向を発信する新メディアをローンチ。情報発信の新たな挑戦。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 鈴木我信. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://x.com/gashin0601?s=21&t=_CYPhP26DF8le42znsYlwQ" target="_blank" rel="noopener noreferrer" aria-label="X (旧Twitter)">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://www.instagram.com/gashinsuzuki?igsh=bm84cDR0MDJyMzRs&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://github.com/Gashin0601" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <canvas id="background-scene"></canvas>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script>
+        let scene, camera, renderer, clock;
+        let jellyfishes = [];
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('background-scene'), antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            scene.fog = new THREE.FogExp2(0x000014, 0.03);
+            camera.position.set(0, 0, 1000);
+
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xcccccc, 1, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+
+            clock = new THREE.Clock();
+
+            createJellyfishes(500);
+            animate();
+
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        const jellyfishVertexShader = `
+            varying vec2 vUv;
+            varying vec3 vNormal;
+            uniform float time;
+
+            void main() {
+                vUv = uv;
+                vNormal = normal;
+
+                float pulse = sin(time * 2.0) * 0.05;
+                vec3 newPosition = position;
+                if (position.y > 0.0) {
+                    newPosition.y += pulse * position.y;
+                }
+
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+            }
+        `;
+
+        const jellyfishFragmentShader = `
+            uniform vec3 color;
+            uniform float opacity;
+            varying vec2 vUv;
+            varying vec3 vNormal;
+
+            void main() {
+                vec3 light = normalize(vec3(0.5, 0.2, 1.0));
+                float dProd = max(0.0, dot(vNormal, light));
+                vec3 finalColor = color * (dProd * 0.8 + 0.2);
+
+                float edge = smoothstep(0.5, 1.0, length(vUv - 0.5) * 2.0);
+                float alpha = opacity * (1.0 - edge * 0.5);
+
+                gl_FragColor = vec4(finalColor, alpha);
+            }
+        `;
+
+        function createJellyfish() {
+            const size = Math.random() * 10 + 5;
+            const color = new THREE.Color(
+                0.5 + Math.random() * 0.5,
+                0.5 + Math.random() * 0.5,
+                0.5 + Math.random() * 0.5
+            );
+            const jellyfishGroup = new THREE.Group();
+
+            const umbrellaGeometry = new THREE.SphereGeometry(size, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
+            const umbrellaMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 },
+                    color: { value: color },
+                    opacity: { value: 0.8 }
+                },
+                vertexShader: jellyfishVertexShader,
+                fragmentShader: jellyfishFragmentShader,
+                transparent: true,
+                side: THREE.DoubleSide
+            });
+            const umbrella = new THREE.Mesh(umbrellaGeometry, umbrellaMaterial);
+            umbrella.scale.set(1, 0.4, 1);
+            jellyfishGroup.add(umbrella);
+
+            const marginGeometry = new THREE.TorusGeometry(size * 0.95, size * 0.05, 16, 100);
+            const marginMaterial = new THREE.MeshPhongMaterial({
+                color: color,
+                transparent: true,
+                opacity: 0.7,
+                side: THREE.DoubleSide
+            });
+            const margin = new THREE.Mesh(marginGeometry, marginMaterial);
+            margin.rotation.x = Math.PI / 2;
+            jellyfishGroup.add(margin);
+
+            for (let i = 0; i < 4; i++) {
+                const curve = new THREE.CatmullRomCurve3([
+                    new THREE.Vector3(0, -size * 0.2, 0),
+                    new THREE.Vector3(size * 0.2, -size * 0.6, 0),
+                    new THREE.Vector3(0, -size * 1.2, 0)
+                ]);
+                const armGeometry = new THREE.TubeGeometry(curve, 20, size * 0.02, 8, false);
+                const armMaterial = new THREE.MeshPhongMaterial({
+                    color: color,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const arm = new THREE.Mesh(armGeometry, armMaterial);
+                arm.rotation.y = i * Math.PI / 2;
+                jellyfishGroup.add(arm);
+            }
+
+            for (let i = 0; i < 8; i++) {
+                const curve = new THREE.CatmullRomCurve3([
+                    new THREE.Vector3(size * 0.9, 0, 0),
+                    new THREE.Vector3(size * 0.7, -size * 0.5, 0),
+                    new THREE.Vector3(size * 0.5, -size, 0),
+                    new THREE.Vector3(size * 0.3, -size * 1.5, 0)
+                ]);
+                const tentacleGeometry = new THREE.TubeGeometry(curve, 20, size * 0.005, 8, false);
+                const tentacleMaterial = new THREE.MeshPhongMaterial({
+                    color: color,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const tentacle = new THREE.Mesh(tentacleGeometry, tentacleMaterial);
+                tentacle.rotation.y = i * Math.PI / 4;
+                jellyfishGroup.add(tentacle);
+            }
+
+            return jellyfishGroup;
+        }
+
+        function createJellyfishes(count) {
+            const range = 2000;
+            for (let i = 0; i < count; i++) {
+                const jellyfish = createJellyfish();
+                jellyfish.position.set(
+                    Math.random() * range - range / 2,
+                    Math.random() * range - range / 2,
+                    Math.random() * range - range / 2
+                );
+                scene.add(jellyfish);
+                jellyfishes.push(jellyfish);
+                moveJellyfish(jellyfish);
+            }
+        }
+
+        function moveJellyfish(jellyfish) {
+            const duration = Math.random() * 10 + 10;
+            const range = 2000;
+            gsap.to(jellyfish.position, {
+                duration: duration,
+                x: Math.random() * range - range / 2,
+                y: Math.random() * range - range / 2,
+                z: Math.random() * range - range / 2,
+                ease: "sine.inOut",
+                onComplete: () => moveJellyfish(jellyfish)
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = clock.getElapsedTime();
+            jellyfishes.forEach(jellyfish => {
+                jellyfish.children.forEach(child => {
+                    if (child.material.uniforms) {
+                        child.material.uniforms.time.value = time;
+                    }
+                });
+
+                for (let i = 5; i < jellyfish.children.length; i++) {
+                    jellyfish.children[i].rotation.z = Math.sin(time * 2 + i) * 0.1;
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        init();
+
+        // ローディングアニメーション
+        window.addEventListener('load', () => {
+            document.querySelector('.loader').style.display = 'none';
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // スムーズスクロール
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // スクロールアニメーション
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.section, .project-card, .timeline-item, .skill').forEach(item => {
+                observer.observe(item);
+            });
+
+            // ヘッダーのスクロール効果
+            window.addEventListener('scroll', () => {
+                const header = document.querySelector('header');
+                if (window.scrollY > 100) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+
+                const sections = document.querySelectorAll('section');
+                const navLinks = document.querySelectorAll('nav ul li a');
+
+                let current = '';
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= sectionTop - sectionHeight / 3) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            // スキルのホバーエフェクト
+            document.querySelectorAll('.skill').forEach(skill => {
+                skill.addEventListener('mouseover', () => {
+                    skill.style.transform = 'translateY(-5px) rotate(5deg)';
+                });
+                skill.addEventListener('mouseout', () => {
+                    skill.style.transform = 'translateY(0) rotate(0deg)';
+                });
+            });
+
+            // プロジェクトカードのホバーエフェクト
+            document.querySelectorAll('.project-card').forEach(card => {
+                card.addEventListener('mouseover', () => {
+                    card.querySelector('.project-overlay').style.opacity = '1';
+                });
+                card.addEventListener('mouseout', () => {
+                    card.querySelector('.project-overlay').style.opacity = '0';
+                });
+            });
+
+            // ギャラリービューのカードをタップしたときに選択しているカード以外の場所をタップすると詳細表示を止める機能
+            document.addEventListener('click', function(event) {
+                const projectCards = document.querySelectorAll('.project-card');
+                projectCards.forEach(card => {
+                    if (!card.contains(event.target) && event.target.closest('.project-card') === null) {
+                        card.querySelector('.project-overlay').style.opacity = '0';
+                    }
+                });
+            });
+
+            // タイムラインアイテムのスクロールアニメーション
+            const timelineObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                        entry.target.style.transform = 'translateX(0)';
+                        entry.target.style.opacity = '1';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.timeline-item').forEach(item => {
+                timelineObserver.observe(item);
+            });
+        });
+    </script>
+</body>
+</html>
